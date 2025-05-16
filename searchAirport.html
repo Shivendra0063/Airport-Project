@@ -1,0 +1,75 @@
+<template>
+    <lightning-card title="✈️ Search Airport" icon-name="utility:search">
+        <div class="slds-p-around_medium">
+
+            <!-- 🔍 Search Input -->
+            <lightning-input
+                type="text"
+                label="Search Airports"
+                placeholder="e.g. LHR, JFK, SIN..."
+                onchange={handleInputChange}
+                class="slds-m-bottom_small">
+            </lightning-input>
+
+            <!-- 📋 Dropdown Suggestions -->
+            <template if:true={showDropdown}>
+                <div class="slds-box slds-theme_shade slds-scrollable_y" style="max-height: 200px;">
+                    <ul class="slds-list_dotted">
+                        <template for:each={airportResults} for:item="airport">
+                            <li
+                                key={airport.iata}
+                                data-iata={airport.iata}
+                                onclick={handleAirportSelect}
+                                class="slds-p-around_x-small slds-theme_info slds-box slds-box_xx-small slds-m-bottom_xx-small hoverable-option"
+                                style="cursor:pointer;">
+                                ✈️ <strong>{airport.name}</strong> ({airport.iata}) - {airport.city}, {airport.country}
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </template>
+
+            <!-- 🧭 Tabbed View -->
+            <template if:true={showAirportTable}>
+                <lightning-tabset class="slds-m-top_medium" active-tab-value={activeTab}>
+
+                    <!-- 🛬 Airport Info Tab -->
+                    <lightning-tab label="Airport Info" value="airportTab" icon-name="utility:location">
+                        <lightning-datatable
+                            key-field="iata"
+                            data={selectedAirportData}
+                            columns={columns}
+                            hide-checkbox-column
+                            class="slds-m-top_small">
+                        </lightning-datatable>
+
+                        <!-- ✈️ Show Airlines Button -->
+                        <div class="slds-m-top_medium slds-align_absolute-center">
+                            <lightning-button
+                                label="Show Airlines"
+                                onclick={handleClick}
+                                variant="brand"
+                                icon-name="utility:airplane">
+                            </lightning-button>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- 🛫 Airlines Tab -->
+                    <template if:true={showAirlineTable}>
+                        <lightning-tab label="Airlines" value="airlineTab" icon-name="standard:company">
+                            <c-logo-image
+                                key-field="iata"
+                                data={airlineData}
+                                columns={airlineColumns}
+                                hide-checkbox-column
+                                class="slds-m-top_small">
+                            </c-logo-image>
+                        </lightning-tab>
+                    </template>
+
+                </lightning-tabset>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
